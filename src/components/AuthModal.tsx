@@ -76,7 +76,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
               <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
             </svg>
           </div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#F0EFF8' }}>BoothBuddy</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#F0EFF8' }}>Cuerate</div>
         </div>
 
         {/* Tabs */}

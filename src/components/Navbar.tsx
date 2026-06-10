@@ -38,7 +38,7 @@ export default function Navbar({ session, onUpload, onAuth, onSignOut }: NavbarP
             <circle cx="18" cy="16" r="3"/>
           </svg>
         </div>
-        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>BoothBuddy</span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Cuerate</span>
         <span style={{
           fontSize: 11, fontWeight: 600, color: 'var(--accent)',
           background: 'rgba(124,92,252,0.15)',

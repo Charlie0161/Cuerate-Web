@@ -72,13 +72,13 @@ export default function HomePage() {
         textAlign: 'center',
       }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: 12 }}>
-          BoothBuddy Community
+          Cuerate Community
         </div>
         <h1 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 700, color: 'var(--text)', margin: '0 0 12px', lineHeight: 1.2 }}>
           DJ Mixes & Sets
         </h1>
         <p style={{ fontSize: 16, color: 'var(--text-sec)', margin: '0 auto 24px', maxWidth: 480 }}>
-          Discover sets from the BoothBuddy community. Share your own from SoundCloud, Mixcloud or YouTube.
+          Discover sets from the Cuerate community. Share your own from SoundCloud, Mixcloud or YouTube.
         </p>
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 16px', maxWidth: 480, margin: '0 auto' }}>

@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BoothBuddy — DJ Mixes & Sets',
-  description: 'Discover and share DJ mixes, sets and tracks from the BoothBuddy community.',
+  title: 'Cuerate — DJ Mixes & Sets',
+  description: 'Discover and share DJ mixes, sets and tracks from the Cuerate community.',
   openGraph: {
-    title: 'BoothBuddy',
-    description: 'DJ mixes and sets from the BoothBuddy community',
+    title: 'Cuerate',
+    description: 'DJ mixes and sets from the Cuerate community',
     type: 'website',
   },
 };
