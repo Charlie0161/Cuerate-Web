@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface NavbarProps {
@@ -41,6 +42,28 @@ export default function Navbar({ session, onUpload, onAuth, onSignOut }: NavbarP
             DJ COMPANION
           </div>
         </div>
+      </div>
+
+      {/* Nav links */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <Link href="/" style={{
+          padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+          color: 'var(--text-sec)', textDecoration: 'none',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-sec)')}
+        >
+          Mixes
+        </Link>
+        <Link href="/tracks" style={{
+          padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+          color: 'var(--text-sec)', textDecoration: 'none',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-sec)')}
+        >
+          Tracks
+        </Link>
       </div>
 
       {/* Right side */}
