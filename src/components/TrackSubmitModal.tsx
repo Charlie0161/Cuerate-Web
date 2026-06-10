@@ -5,6 +5,17 @@ import { createClient, detectPlatform, fetchOEmbed } from '../lib/supabase';
 const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL ?? '';
 const WORKER_SECRET = process.env.NEXT_PUBLIC_WORKER_SECRET ?? '';
 
+
+// ─── Duplicate check ──────────────────────────────────────────────────────────
+async function checkDuplicate(supabase: any, url: string): Promise<null | { id: string; title: string; artist: string | null; bpm: number | null; camelot_key: string | null; status: string }> {
+  const { data } = await supabase
+    .from('track_submissions')
+    .select('id, title, artist, bpm, camelot_key, status')
+    .eq('external_url', url.trim())
+    .maybeSingle();
+  return data ?? null;
+}
+
 interface TrackSubmitModalProps {
   session: any;
   onClose: () => void;
@@ -39,6 +50,7 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
   const [error, setError]     = useState('');
   const [preview, setPreview] = useState('');
   const [trackDone, setTrackDone] = useState(false);
+  const [trackDupe, setTrackDupe] = useState<null | { id: string; title: string; artist: string | null; bpm: number | null; camelot_key: string | null; status: string }>(null);
 
   // ── Playlist state ─────────────────────────────────────────────────────────
   const [plUrl, setPlUrl]           = useState('');
@@ -50,6 +62,7 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
   const [plSubmitting, setPlSubmitting] = useState(false);
   const [plDone, setPlDone]         = useState(false);
   const [plSubmitted, setPlSubmitted] = useState(0);
+  const [plDupes, setPlDupes] = useState(0);
 
   const supabase = createClient();
 
@@ -88,8 +101,15 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
     if (!url.trim() || !title.trim()) { setError('URL and title are required.'); return; }
     const platform = detectPlatform(url);
     if (platform === 'other') { setError('Please use a SoundCloud, YouTube, or Mixcloud URL.'); return; }
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setTrackDupe(null);
     try {
+      // Check for existing submission first
+      const existing = await checkDuplicate(supabase, url);
+      if (existing) {
+        setTrackDupe(existing);
+        setLoading(false);
+        return;
+      }
       const oembed = await fetchOEmbed(url, platform);
       const { error: insertError } = await supabase.from('track_submissions').insert({
         submitted_by: session.user.id,
@@ -152,9 +172,29 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
     if (!plTracks.length) return;
     setPlSubmitting(true); setPlError('');
     let submitted = 0;
+    let dupes = 0;
     try {
-      // Bulk insert all tracks as pending — worker picks them up automatically
-      const rows = plTracks.map(t => ({
+      // Check all URLs for duplicates in one query
+      const urls = plTracks.map(t => t.url);
+      const { data: existingData } = await supabase
+        .from('track_submissions')
+        .select('external_url')
+        .in('external_url', urls);
+      const existingUrls = new Set((existingData ?? []).map((r: any) => r.external_url));
+
+      // Filter out duplicates
+      const newTracks = plTracks.filter(t => !existingUrls.has(t.url));
+      dupes = plTracks.length - newTracks.length;
+      setPlDupes(dupes);
+
+      if (newTracks.length === 0) {
+        // All tracks already exist
+        setPlDone(true);
+        onSuccess();
+        return;
+      }
+
+      const rows = newTracks.map(t => ({
         submitted_by: session.user.id,
         external_url: t.url,
         platform: t.platform,
@@ -164,7 +204,7 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
         status: 'pending',
       }));
 
-      // Insert in batches of 10 to avoid request size limits
+      // Insert in batches of 10
       for (let i = 0; i < rows.length; i += 10) {
         const batch = rows.slice(i, i + 10);
         const { error: insertError } = await supabase.from('track_submissions').insert(batch);
@@ -278,6 +318,32 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
                   </div>
                 </div>
                 {error && <div style={{ background: 'rgba(255,77,77,0.1)', border: '1px solid rgba(255,77,77,0.3)', borderRadius: 8, padding: '10px 14px', color: '#FF4D4D', fontSize: 13 }}>{error}</div>}
+                {trackDupe && (
+                  <div style={{ background: 'rgba(77,204,143,0.08)', border: '1px solid rgba(77,204,143,0.3)', borderRadius: 10, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#4DCC8F', marginBottom: 6 }}>✓ Already in the database</div>
+                    <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>{trackDupe.title}{trackDupe.artist ? ` — ${trackDupe.artist}` : ''}</div>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' as const }}>
+                      {trackDupe.bpm && (
+                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 5, background: 'var(--raised)', color: 'var(--text-sec)', fontWeight: 600 }}>{trackDupe.bpm} BPM</span>
+                      )}
+                      {trackDupe.camelot_key && (
+                        <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 5, background: 'rgba(124,92,252,0.15)', color: '#7C5CFC', fontWeight: 700 }}>{trackDupe.camelot_key}</span>
+                      )}
+                      <span style={{
+                        fontSize: 11, padding: '2px 8px', borderRadius: 5, fontWeight: 600,
+                        background: trackDupe.status === 'ready' ? 'rgba(77,204,143,0.12)' : 'rgba(245,166,35,0.12)',
+                        color: trackDupe.status === 'ready' ? '#4DCC8F' : '#F5A623',
+                      }}>
+                        {trackDupe.status === 'ready' ? 'Ready' : trackDupe.status === 'analysing' ? 'Analysing…' : 'Queued'}
+                      </span>
+                    </div>
+                    {trackDupe.status === 'ready' && (
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
+                        You can find this track in Set Builder search or on the Tracks page.
+                      </div>
+                    )}
+                  </div>
+                )}
                 <button onClick={handleSingleSubmit} disabled={loading} style={{ padding: 13, borderRadius: 12, background: 'var(--accent)', border: 'none', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.6 : 1 }}>
                   {loading ? 'Submitting…' : 'Submit track for analysis'}
                 </button>
@@ -293,7 +359,7 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
               <div style={{ textAlign: 'center', padding: '24px 0' }}>
                 <div style={{ fontSize: 36, marginBottom: 12 }}>📋</div>
                 <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
-                  {plSubmitted} tracks queued!
+                  {plSubmitted === 0 ? 'All tracks already exist!' : `${plSubmitted} track${plSubmitted !== 1 ? 's' : ''} queued!`}
                 </p>
                 <p style={{ fontSize: 14, color: 'var(--text-sec)', marginBottom: 20, lineHeight: 1.5 }}>
                   Each track takes ~60 seconds to analyse. They'll appear in the track database as they complete.
@@ -302,7 +368,10 @@ export default function TrackSubmitModal({ session, onClose, onSuccess }: TrackS
                   <div style={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
                     <div style={{ height: '100%', background: 'var(--accent)', borderRadius: 3, width: '100%', transition: 'width 0.3s' }} />
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>All {plSubmitted} tracks submitted — analysis running in background</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
+                    {plSubmitted > 0 ? `${plSubmitted} new track${plSubmitted !== 1 ? 's' : ''} queued for analysis` : 'No new tracks to queue'}
+                    {plDupes > 0 ? ` · ${plDupes} already in database (skipped)` : ''}
+                  </div>
                 </div>
                 <button onClick={onClose} style={{ padding: '10px 28px', borderRadius: 10, background: 'var(--accent)', border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Done</button>
               </div>
