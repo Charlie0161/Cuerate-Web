@@ -25,26 +25,22 @@ export default function Navbar({ session, onUpload, onAuth, onSignOut }: NavbarP
       zIndex: 100,
     }}>
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 8,
-          background: 'rgba(124,92,252,0.2)',
-          border: '1px solid rgba(124,92,252,0.4)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
-            <path d="M9 18V5l12-2v13"/>
-            <circle cx="6" cy="18" r="3"/>
-            <circle cx="18" cy="16" r="3"/>
-          </svg>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+        {/* Geometric C icon */}
+        <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 30 8 A 18 18 0 1 0 30 40" fill="none" stroke="#7C5CFC" strokeWidth="4.5" strokeLinecap="round"/>
+          <circle cx="30" cy="8" r="3.5" fill="#7C5CFC"/>
+          <circle cx="30" cy="40" r="3.5" fill="#AFA9EC"/>
+        </svg>
+        {/* Wordmark */}
+        <div style={{ marginLeft: 10 }}>
+          <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: '0.18em', color: 'var(--text)', lineHeight: 1 }}>
+            CUERATE
+          </div>
+          <div style={{ fontSize: 7, fontWeight: 300, letterSpacing: '0.22em', color: 'var(--text-sec)', marginTop: 3 }}>
+            DJ COMPANION
+          </div>
         </div>
-        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Cuerate</span>
-        <span style={{
-          fontSize: 11, fontWeight: 600, color: 'var(--accent)',
-          background: 'rgba(124,92,252,0.15)',
-          border: '1px solid rgba(124,92,252,0.3)',
-          borderRadius: 4, padding: '2px 6px', letterSpacing: '0.5px',
-        }}>MIXES</span>
       </div>
 
       {/* Right side */}
