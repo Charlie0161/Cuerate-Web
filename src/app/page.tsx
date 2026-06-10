@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar';
 import MixCard from '../components/MixCard';
 import UploadModal from '../components/UploadModal';
 import AuthModal from '../components/AuthModal';
+import TrackSubmitModal from '../components/TrackSubmitModal';
 
 const GENRES = ['All', 'House', 'Techno', 'Drum & Bass', 'UK Garage', 'Jungle', 'Trance', 'Hip-Hop', 'Afrobeats', 'Disco', 'Ambient'];
 
@@ -15,6 +16,7 @@ export default function HomePage() {
   const [filter, setFilter] = useState<'all' | 'set' | 'track'>('all');
   const [genre, setGenre] = useState('All');
   const [showUpload, setShowUpload] = useState(false);
+  const [showTrackSubmit, setShowTrackSubmit] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,6 +42,11 @@ export default function HomePage() {
     const { data } = await query;
     setMixes(data ?? []);
     setLoading(false);
+  }
+
+  function handleTrackSubmitClick() {
+    if (!session) { setShowAuth(true); return; }
+    setShowTrackSubmit(true);
   }
 
   function handleUploadClick() {
@@ -122,6 +129,17 @@ export default function HomePage() {
             </svg>
             Share a mix
           </button>
+          <button onClick={handleTrackSubmitClick} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '9px 20px', borderRadius: 10,
+            background: 'var(--surface)', border: '1px solid var(--accent)',
+            color: 'var(--accent)', fontSize: 14, fontWeight: 700, cursor: 'pointer',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3"/>
+            </svg>
+            Submit a track
+          </button>
         </div>
 
         {/* Genre pills */}
@@ -178,6 +196,13 @@ export default function HomePage() {
       )}
       {showAuth && (
         <AuthModal onClose={() => setShowAuth(false)} onSuccess={() => { setShowAuth(false); fetchMixes(); }} />
+      )}
+      {showTrackSubmit && session && (
+        <TrackSubmitModal
+          session={session}
+          onClose={() => setShowTrackSubmit(false)}
+          onSuccess={() => setShowTrackSubmit(false)}
+        />
       )}
     </div>
   );
