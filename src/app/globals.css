@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0A0A0C;
+  --surface: #13131A;
+  --raised: #1C1C26;
+  --border: #2A2A38;
+  --accent: #7C5CFC;
+  --accent-dim: #3D2E8A;
+  --critical: #FF4D4D;
+  --warning: #F5A623;
+  --success: #4DCC8F;
+  --text: #F0EFF8;
+  --text-sec: #8A89A0;
+  --text-muted: #52516A;
+  --soundcloud: #FF5500;
+  --mixcloud: #52AAD8;
+  --youtube: #FF0000;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Embed overrides */
+iframe { border: none; width: 100%; }
+
+.embed-container iframe {
+  width: 100% !important;
+}
