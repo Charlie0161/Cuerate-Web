@@ -46,6 +46,43 @@ export type Profile = {
   bio: string | null;
 };
 
+export type Condition = 'mint' | 'excellent' | 'good' | 'fair' | 'spares';
+
+export const CONDITION_LABELS: Record<Condition, string> = {
+  mint: 'Mint', excellent: 'Excellent', good: 'Good', fair: 'Fair', spares: 'Spares/Repair',
+};
+
+export const CONDITION_COLORS: Record<Condition, string> = {
+  mint: '#4DCC8F', excellent: '#4DB8FF', good: '#7C5CFC', fair: '#F5A623', spares: '#FF4D4D',
+};
+
+export function formatPrice(pence: number): string {
+  return `£${(pence / 100).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+export type GearListing = {
+  id: string;
+  seller_id: string;
+  gear_id: string | null;
+  brand: string;
+  model: string;
+  category: string;
+  price: number;
+  condition: Condition;
+  description: string | null;
+  location: string | null;
+  photo_urls: string[] | null;
+  includes: string | null;
+  status: string;
+  contact_method: string;
+  contact_value: string | null;
+  view_count: number;
+  created_at: string;
+  seller_name: string | null;
+  seller_avatar: string | null;
+  seller_location: string | null;
+};
+
 export type DJProfile = {
   id: string;
   dj_name: string | null;
