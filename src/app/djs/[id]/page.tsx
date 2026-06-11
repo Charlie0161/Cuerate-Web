@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -95,6 +95,51 @@ function TrackRow({ track }: { track: TrackSubmission }) {
   );
 }
 
+
+// ─── Follow button ─────────────────────────────────────────────────────────────
+
+function FollowButton({ session, djId, onSignIn }: { session: any; djId: string; onSignIn: () => void }) {
+  const [following, setFollowing] = useState(false);
+  const [count, setCount] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    if (!djId) return;
+    supabase.from('dj_follows').select('id', { count: 'exact' }).eq('following_id', djId).then(({ count: c }) => setCount(c ?? 0));
+    if (session?.user) {
+      supabase.from('dj_follows').select('id').eq('follower_id', session.user.id).eq('following_id', djId).maybeSingle()
+        .then(({ data }) => setFollowing(!!data));
+    }
+  }, [session, djId]);
+
+  async function toggle() {
+    if (!session) { onSignIn(); return; }
+    setBusy(true);
+    if (following) {
+      await supabase.from('dj_follows').delete().eq('follower_id', session.user.id).eq('following_id', djId);
+      setFollowing(false); setCount(c => Math.max(0, c - 1));
+    } else {
+      await supabase.from('dj_follows').insert({ follower_id: session.user.id, following_id: djId });
+      setFollowing(true); setCount(c => c + 1);
+    }
+    setBusy(false);
+  }
+
+  return (
+    <button onClick={toggle} disabled={busy} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+      border: '1px solid', cursor: 'pointer', marginTop: 16,
+      borderColor: following ? 'var(--border)' : 'var(--accent)',
+      background: following ? 'var(--raised)' : 'var(--accent)',
+      color: following ? 'var(--text-sec)' : '#fff',
+      opacity: busy ? 0.7 : 1,
+    }}>
+      {following ? 'Following' : '+ Follow'}{count > 0 ? (' · ' + count) : ''}
+    </button>
+  );
+}
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DJProfilePage() {
@@ -139,7 +184,7 @@ export default function DJProfilePage() {
     ]);
 
     if (!profileRes.data) { setNotFound(true); setLoading(false); return; }
-    setDj(profileRes.data);
+    setDj(profileRes.data as any);
     setMixes(mixesRes.data ?? []);
     setTracks(tracksRes.data ?? []);
     setLoading(false);
@@ -246,6 +291,7 @@ export default function DJProfilePage() {
             </div>
           </div>
 
+          <FollowButton session={session} djId={id ?? ''} onSignIn={() => setShowAuth(true)} />
           {/* Action buttons */}
           <div style={{ display: 'flex', gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
             {dj.soundcloud_url && (

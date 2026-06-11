@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient, Mix } from '../lib/supabase';
@@ -87,6 +87,17 @@ export default function HomePage() {
         <p style={{ fontSize: 16, color: 'var(--text-sec)', margin: '0 auto 24px', maxWidth: 480 }}>
           Discover sets from the Cuerate community. Share your own from SoundCloud, Mixcloud or YouTube.
         </p>
+        {/* App download CTAs */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
+          <a href='https://apps.apple.com/app/cuerate/id0000000000' target='_blank' rel='noopener noreferrer' style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
+            <svg width='18' height='18' viewBox='0 0 24 24' fill='currentColor'><path d='M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z'/></svg>
+            App Store
+          </a>
+          <a href='https://play.google.com/store/apps/details?id=com.cuerate.app' target='_blank' rel='noopener noreferrer' style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
+            <svg width='18' height='18' viewBox='0 0 24 24' fill='currentColor'><path d='M3.18 23.76c.3.17.64.24.99.2l12.01-12.01L12.77 8.6 3.18 23.76zM20.62 10.1l-2.93-1.66-3.44 3.44 3.44 3.44 2.96-1.67c.84-.48.84-1.67-.03-2.55zM1.19.91C1.07 1.18 1 1.5 1 1.87v20.26c0 .37.07.69.19.96l.05.06 11.35-11.36v-.13L1.24.85l-.05.06zM16.37 16.19 4.35 23.13c-.32.18-.63.23-.92.17l12.01-12.01 2.93 1.66c-.34.48-.87.87-2 1.24z'/></svg>
+            Google Play
+          </a>
+        </div>
         {/* Search */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 16px', maxWidth: 480, margin: '0 auto' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2">
@@ -165,7 +176,7 @@ export default function HomePage() {
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🎧</div>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>ðŸŽ§</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
               {searchQuery ? 'No results found' : 'No mixes yet'}
             </div>

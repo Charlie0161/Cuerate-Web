@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr';
+﻿import { createBrowserClient } from '@supabase/ssr';
 
 const SUPABASE_URL = 'https://iaqprkjgphbzmgttpohy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhcXBya2pncGhiem1ndHRwb2h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwODMyMzcsImV4cCI6MjA5NjY1OTIzN30.LRmtJ6KVKtZruYlDn0Psn9XzKZE7w5Gcmn1IMxOKeLU';
@@ -93,8 +93,43 @@ export type DJProfile = {
   soundcloud_url: string | null;
   booking_email: string | null;
   is_pro: boolean | null;
+  is_venue: boolean | null;
   account_type: string | null;
+  is_public: boolean | null;
 };
+
+export type BookingRequest = {
+  id: string;
+  venue_id: string;
+  venue_name: string;
+  date: string;
+  start_time: string | null;
+  location: string | null;
+  genre: string | null;
+  fee_min: number | null;
+  fee_max: number | null;
+  description: string | null;
+  status: string;
+  created_at: string;
+};
+
+export type BookingApplication = {
+  id: string;
+  request_id: string;
+  dj_id: string;
+  message: string;
+  status: string;
+  created_at: string;
+};
+
+export function formatFee(min: number | null, max: number | null): string {
+  if (!min && !max) return 'Fee TBC';
+  const fmt = (p: number) => `${(p / 100).toFixed(0)}`;
+  if (min && max && min !== max) return `${fmt(min)} – ${fmt(max)}`;
+  if (min) return `From ${fmt(min)}`;
+  if (max) return `Up to ${fmt(max)}`;
+  return `${fmt(min!)}`;
+}
 
 // Detect platform from URL
 export function detectPlatform(url: string): Mix['platform'] {
@@ -130,3 +165,4 @@ export async function fetchOEmbed(url: string, platform: Mix['platform']): Promi
     return { html: null, thumbnail: null, title: null };
   }
 }
+

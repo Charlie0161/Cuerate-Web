@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
@@ -127,7 +127,7 @@ export default function DJsPage() {
       .eq('is_public', true)
       .eq('account_type', 'dj')
       .order('dj_name', { ascending: true });
-    setDjs(data ?? []);
+    setDjs((data ?? []) as any);
     setLoading(false);
   }
 
