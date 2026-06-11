@@ -46,6 +46,19 @@ export type Profile = {
   bio: string | null;
 };
 
+export type DJProfile = {
+  id: string;
+  dj_name: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  genre: string | null;
+  location: string | null;
+  soundcloud_url: string | null;
+  booking_email: string | null;
+  is_pro: boolean | null;
+  account_type: string | null;
+};
+
 // Detect platform from URL
 export function detectPlatform(url: string): Mix['platform'] {
   if (url.includes('soundcloud.com')) return 'soundcloud';

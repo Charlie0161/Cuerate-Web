@@ -64,6 +64,15 @@ export default function Navbar({ session, onUpload, onAuth, onSignOut }: NavbarP
         >
           Tracks
         </Link>
+        <Link href="/djs" style={{
+          padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+          color: 'var(--text-sec)', textDecoration: 'none',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-sec)')}
+        >
+          DJs
+        </Link>
       </div>
 
       {/* Right side */}
