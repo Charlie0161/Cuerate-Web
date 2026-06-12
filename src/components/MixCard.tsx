@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import { createClient, Mix, Comment } from '../lib/supabase';
 
@@ -31,7 +31,17 @@ export default function MixCard({ mix, session, onRefresh }: MixCardProps) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(mix.like_count ?? 0);
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [showEmbedCode, setShowEmbedCode] = useState(false);
+  const [embedCopied, setEmbedCopied] = useState(false);
   const supabase = createClient();
+
+  const embedCode = `<iframe src="https://cuerate.co.uk/embed/${mix.id}" width="100%" height="166" frameborder="0" allow="autoplay" style="border-radius:8px"></iframe>`;
+
+  async function copyEmbed() {
+    try { await navigator.clipboard.writeText(embedCode); } catch { }
+    setEmbedCopied(true);
+    setTimeout(() => setEmbedCopied(false), 2000);
+  }
 
   async function handleLike() {
     if (!session) return;
@@ -232,7 +242,19 @@ export default function MixCard({ mix, session, onRefresh }: MixCardProps) {
             💬 {mix.comment_count ?? 0}
           </button>
 
-          {/* Embed toggle */}
+          {/* Share embed */}
+          <button onClick={() => setShowEmbedCode(!showEmbedCode)} style={{
+            marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4,
+            padding: '6px 12px', borderRadius: 7,
+            background: showEmbedCode ? 'rgba(124,92,252,0.1)' : 'transparent',
+            border: `1px solid ${showEmbedCode ? 'rgba(124,92,252,0.3)' : 'var(--border)'}`,
+            color: showEmbedCode ? 'var(--accent)' : 'var(--text-muted)',
+            fontSize: 12, cursor: 'pointer',
+          }}>
+            <svg width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>
+            Embed
+          </button>
+          {/* Player toggle */}
           {mix.embed_html && (
             <button onClick={() => setExpanded(!expanded)} style={{
               marginLeft: 'auto',
@@ -305,6 +327,16 @@ export default function MixCard({ mix, session, onRefresh }: MixCardProps) {
                 Sign in to leave a comment
               </div>
             )}
+          </div>
+        )}
+        {/* Embed code panel */}
+        {showEmbedCode && (
+          <div style={{ marginTop: 14, padding: 14, background: 'var(--raised)', borderRadius: 10, border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Embed code</div>
+            <code style={{ display: 'block', fontSize: 11, color: 'var(--text-sec)', wordBreak: 'break-all', lineHeight: 1.6, marginBottom: 10 }}>{embedCode}</code>
+            <button onClick={copyEmbed} style={{ padding: '6px 14px', borderRadius: 7, background: embedCopied ? 'rgba(77,204,143,0.1)' : 'var(--surface)', border: `1px solid ${embedCopied ? 'rgba(77,204,143,0.4)' : 'var(--border)'}`, color: embedCopied ? 'var(--success)' : 'var(--text-sec)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+              {embedCopied ? '✓ Copied!' : 'Copy code'}
+            </button>
           </div>
         )}
       </div>

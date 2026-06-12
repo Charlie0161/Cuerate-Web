@@ -45,8 +45,8 @@ export default function Navbar({ session, onUpload, onAuth, onSignOut }: NavbarP
 
       {/* Nav links */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        {(['/', '/tracks', '/djs', '/gigs', '/marketplace'] as const).map(href => {
-          const label = href === '/' ? 'Mixes' : href === '/tracks' ? 'Tracks' : href === '/djs' ? 'DJs' : href === '/gigs' ? 'Gigs' : 'Marketplace';
+        {(['/', '/tracks', '/djs', '/gigs', '/marketplace', '/venues'] as const).map(href => {
+          const label = href === '/' ? 'Mixes' : href === '/tracks' ? 'Tracks' : href === '/djs' ? 'DJs' : href === '/gigs' ? 'Gigs' : href === '/venues' ? 'Venues' : 'Marketplace';
           return (
             <Link key={href} href={href} style={navLink}
               onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}

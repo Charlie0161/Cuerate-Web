@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { parseAndStoreTransitions } from '../lib/tracklistParser';
 import { createClient, detectPlatform, fetchOEmbed } from '../lib/supabase';
 
 const GENRES = ['House', 'Techno', 'Drum & Bass', 'UK Garage', 'Jungle', 'Trance', 'Hip-Hop', 'Afrobeats', 'Disco', 'Ambient', 'Other'];
@@ -60,6 +61,10 @@ export default function UploadModal({ session, onClose, onSuccess }: UploadModal
         thumbnail_url: oembed.thumbnail,
       });
       if (insertError) throw insertError;
+      // Parse tracklist to build transition graph in background
+      if (tracklist.trim()) {
+        parseAndStoreTransitions(supabase, tracklist, genre || undefined).catch(() => {});
+      }
       onSuccess();
     } catch (e: any) {
       setError(e.message ?? 'Upload failed. Try again.');
